@@ -1,0 +1,40 @@
+# gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# maven (혹시 나중에 병행할 경우 대비)
+target/
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+.vscode/
+
+# env / config secrets
+.env
+application-local.yml
+application-local.properties
+application-secret.yml
+
+# logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# compiled class files
+*.class
+
+# package files
+*.jar
+*.war
+!gradle/wrapper/gradle-wrapper.jar
