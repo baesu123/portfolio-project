@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ssaju 라이브러리 오행 사주 테스트</title>
+    <style>
+      body {
+        max-width: 680px;
+        margin: 40px auto;
+        padding: 0 16px;
+        font-family: sans-serif;
+        color: #222;
+      }
+      form,
+      #result {
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      .fields {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      input,
+      select,
+      button {
+        padding: 9px;
+        font: inherit;
+      }
+      button {
+        grid-column: 1 / -1;
+        margin-top: 6px;
+        cursor: pointer;
+      }
+      #result {
+        margin-top: 16px;
+      }
+      .pillars,
+      .elements {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .pillars span,
+      .elements span {
+        padding: 10px 14px;
+        background: #f3f3f3;
+        border-radius: 6px;
+      }
+      .error {
+        color: #c62828;
+      }
+      @media (max-width: 480px) {
+        .fields {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>오행 사주 테스트</h1>
+
+    <form id="saju-form">
+      <div class="fields">
+        <label
+          >생년월일
+          <input id="birth-date" type="date" required />
+        </label>
+        <label
+          >태어난 시간
+          <input id="birth-time" type="time" value="12:00" required />
+        </label>
+        <label
+          >성별
+          <select id="gender">
+            <option value="남">남성</option>
+            <option value="여">여성</option>
+          </select>
+        </label>
+        <label
+          >달력
+          <select id="calendar">
+            <option value="solar">양력</option>
+            <option value="lunar">음력</option>
+          </select>
+        </label>
+        <button type="submit">오행 사주 보기</button>
+      </div>
+    </form>
+
+    <section id="result" hidden></section>
+
+    <script type="module">
+      import { calculateSaju } from "ssaju";
+
+      const form = document.querySelector("#saju-form");
+      const resultBox = document.querySelector("#result");
+      const pillarNames = {
+        year: "년주",
+        month: "월주",
+        day: "일주",
+        hour: "시주",
+      };
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        try {
+          const [year, month, day] = document
+            .querySelector("#birth-date")
+            .value.split("-")
+            .map(Number);
+          const [hour, minute] = document
+            .querySelector("#birth-time")
+            .value.split(":")
+            .map(Number);
+
+          const saju = calculateSaju({
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            gender: document.querySelector("#gender").value,
+            calendar: document.querySelector("#calendar").value,
+            timezone: "Asia/Seoul",
+          });
+
+          const pillars = Object.entries(saju.pillars)
+            .map(
+              ([key, value]) =>
+                `<span><strong>${pillarNames[key]}</strong><br>${value}</span>`,
+            )
+            .join("");
+          const elements = Object.entries(saju.fiveElements)
+            .map(
+              ([name, count]) =>
+                `<span><strong>${name}</strong> ${count}</span>`,
+            )
+            .join("");
+
+          resultBox.className = "";
+          resultBox.innerHTML = `
+          <h2>사주팔자</h2>
+          <div class="pillars">${pillars}</div>
+          <h2>오행 분포</h2>
+          <div class="elements">${elements}</div>
+          <h2>간단 해석</h2>
+          <p>${saju.advanced.interpretation.replaceAll("\n", "<br>")}</p>
+          <small>재미와 테스트 목적으로만 확인해 주세요.</small>
+        `;
+          resultBox.hidden = false;
+        } catch (error) {
+          resultBox.className = "error";
+          resultBox.textContent = `계산 중 오류가 발생했습니다: ${error.message}`;
+          resultBox.hidden = false;
+        }
+      });
+    </script>
+  </body>
+</html>

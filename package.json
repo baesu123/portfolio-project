@@ -1,5 +1,13 @@
 {
+  "scripts": {
+    "dev": "vite frontend/temp --host 0.0.0.0",
+    "build": "vite build frontend/temp",
+    "preview": "vite preview frontend/temp"
+  },
   "dependencies": {
     "ssaju": "^0.2.0"
+  },
+  "devDependencies": {
+    "vite": "^7.1.3"
   }
 }
